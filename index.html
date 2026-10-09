@@ -60,6 +60,13 @@ button:focus-visible,#pinata:focus-visible,#cake:focus-visible{outline:3px solid
 @keyframes rise{to{transform:translateY(-135vh)}}
 @keyframes sway{from{transform:rotate(-9deg)}to{transform:rotate(9deg)}}
 .heart{position:absolute;bottom:-40px;pointer-events:none;animation:rise var(--d) linear forwards;opacity:.8}
+#photo{position:fixed;inset:0;z-index:55;display:none;align-items:center;justify-content:center;padding:20px;background:rgba(40,10,60,.55);backdrop-filter:blur(4px)}
+#photo.show{display:flex}
+#photo figure{margin:0;background:#fff;padding:14px 14px 12px;border-radius:10px;max-width:min(92vw,420px);box-shadow:0 20px 60px rgba(0,0,0,.45);transform:rotate(-3deg);animation:photoin .9s cubic-bezier(.2,1.5,.4,1)}
+@keyframes photoin{from{transform:scale(.1) rotate(-40deg);opacity:0}}
+#photo img{display:block;width:100%;max-height:60vh;object-fit:cover;border-radius:4px}
+#photo figcaption{font-family:Pacifico,cursive;color:#c2185b;font-size:1.4rem;margin-top:10px}
+#pmiss{display:none;color:#4b1a52;padding:30px 10px;font-size:1rem}
 footer{margin-top:30px;font-family:Pacifico,cursive;font-size:1.5rem;color:var(--accent)}
 @media (prefers-reduced-motion:reduce){*{animation-duration:6s!important}}
 </style>
@@ -114,6 +121,15 @@ footer{margin-top:30px;font-family:Pacifico,cursive;font-size:1.5rem;color:var(-
 
  <footer>We love you, Ammi ❤</footer>
 </main>
+
+<div id="photo" role="dialog" aria-modal="true" aria-label="Photo of Ammi">
+ <figure>
+  <img id="pimg" src="ammi.jpg" alt="Ammi">
+  <p id="pmiss">Photo not found. Save your photo as <b>ammi.jpg</b> in the same folder as index.html.</p>
+  <figcaption>Happy Birthday Ammi 💖</figcaption>
+  <button id="pclose">Close</button>
+ </figure>
+</div>
 
 <script>
 (function(){
@@ -177,14 +193,22 @@ pin.addEventListener('click',()=>{
  pin.style.display='none';$('#rope').style.display='none';
  hitsEl.textContent='It broke! Candy for everyone! 🎉';
  pmsg.classList.add('show');
+ setTimeout(openPhoto,1300);
 });
 $('#again').addEventListener('click',()=>{hits=0;pin.style.display='';$('#rope').style.display='';pmsg.classList.remove('show');hitsEl.textContent='Tap the piñata. 5 hits to go.'});
 /* cake */
+const photo=$('#photo');
+function openPhoto(){photo.classList.add('show');burst(innerWidth/2,innerHeight/2,120,11);$('#pclose').focus()}
+function closePhoto(){photo.classList.remove('show')}
+$('#pclose').addEventListener('click',closePhoto);
+photo.addEventListener('click',e=>{if(e.target===photo)closePhoto()});
+addEventListener('keydown',e=>{if(e.key==='Escape')closePhoto()});
+$('#pimg').addEventListener('error',e=>{e.target.style.display='none';$('#pmiss').style.display='block'});
 const cake=$('#cake'),svg=$('#cakesvg'),cmsg=$('#cmsg');
 function blow(){
  if(cake.classList.contains('out'))return;
  cake.classList.add('out');
- [118,150,182].forEach((x,i)=>{for(let k=0;k<4;k++){const c=document.createElementNS('http://www.w3.org/2000/svg','circle');c.setAttribute('cx',x);c.setAttribute('cy',60-i%2*6);c.setAttribute('r',4);c.setAttribute('class','smoke');c.style.cssText=`--sx:${rnd(-18,18)}px;animation-delay:${k*.25}s`;svg.appendChild(c);setTimeout(()=>c.remove(),2600)}});
+ [118,150,182].forEach((x,i)=>{for(let k=0;k<3;k++){const c=document.createElementNS('http://www.w3.org/2000/svg','circle');c.setAttribute('cx',x);c.setAttribute('cy',60-i%2*6);c.setAttribute('r',4);c.setAttribute('class','smoke');c.style.cssText=`--sx:${rnd(-18,18)}px;animation-delay:${k*.25}s`;svg.appendChild(c);setTimeout(()=>c.remove(),2600)}});
  const r=cake.getBoundingClientRect();
  burst(r.left+r.width/2,r.top+r.height/3,150,12);setTimeout(()=>burst(innerWidth*.2,innerHeight*.4,70,9),300);setTimeout(()=>burst(innerWidth*.8,innerHeight*.4,70,9),500);
  $('#chint').textContent='Happy birthday to you, Ammi! 🎶';cmsg.classList.add('show');
